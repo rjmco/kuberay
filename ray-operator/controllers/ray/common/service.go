@@ -77,7 +77,11 @@ func BuildServiceForHeadPod(cluster rayiov1alpha1.RayCluster, labels map[string]
 // the worker nodes to connect to the head node.
 // RayService controller updates the service whenever a new RayCluster serves the traffic.
 func BuildHeadServiceForRayService(rayService rayiov1alpha1.RayService, rayCluster rayiov1alpha1.RayCluster) (*corev1.Service, error) {
-	service, err := BuildServiceForHeadPod(rayCluster, nil, nil)
+	annotations := make(map[string]string)
+	for k, v := range rayService.Spec.RayClusterSpec.HeadServiceAnnotations {
+		annotations[k] = v
+	}
+	service, err := BuildServiceForHeadPod(rayCluster, nil, annotations)
 	if err != nil {
 		return nil, err
 	}
